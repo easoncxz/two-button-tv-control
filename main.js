@@ -53,7 +53,7 @@ function modeUp() {
             mode = MODE.BRI;
             break;
     }
-    setCaption(mode + ': ' + getParam(mode));
+    setStatus(mode + ': ' + getParam(mode));
 }
 
 function modeDown() {
@@ -68,7 +68,7 @@ function modeDown() {
             mode = MODE.VOL;
             break;
     }
-    setCaption(mode + ': ' + getParam(mode));
+    setStatus(mode + ': ' + getParam(mode));
 }
 
 var KEYSTATE = {
@@ -96,13 +96,10 @@ var shutdownTimeoutId;
 function startShutdownTimer() {
     shutdownTimeoutId = setTimeout(function() {
         state = STATE.SHUTDOWN_PROMPT;
-        display("Are you sure you want to shut down? <br> Press J to shutdown, and K to cancel.");
+        display("Are you sure you want to shut down?");
+        setHelpText('(You can release both keys now.)<br>Press Ctrl to shutdown, or Shift to cancel.');
         displayState({});
     }, 800);
-}
-
-function display(text) {
-    $('#display').html(text);
 }
 
 function displayState(now) {
@@ -117,8 +114,16 @@ function displayState(now) {
     $('#state-displayer .prev .k .value').text(prev.k);
 }
 
-function setCaption(text) {
-    $('#caption').html(text);
+function display(text) {
+    $('#display').text(text);
+}
+
+function setHelpText(text) {
+    $('#help-text').html(text);
+}
+
+function setStatus(text) {
+    $('#status').text(text);
 }
 
 function someKeyWasDown() {
@@ -159,15 +164,15 @@ function setParam(mode, now) {
     switch (mode) {
         case MODE.VOL:
             volumeUp(delta);
-            setCaption(MODE.VOL + ': ' + volume);
+            setStatus(MODE.VOL + ': ' + volume);
             break;
         case MODE.BRI:
             brightnessUp(delta);
-            setCaption(MODE.BRI + ': ' + brightness);
+            setStatus(MODE.BRI + ': ' + brightness);
             break;
         case MODE.CHAN:
             channelUp(delta);
-            setCaption(MODE.CHAN + ': ' + channel);
+            setStatus(MODE.CHAN + ': ' + channel);
             break;
         default:
             alert("unrecognized mode in setParam");
@@ -183,8 +188,12 @@ function transition(now) {
                     if (now.action == KEYSTATE.UP) { // user came from SHUTDOWN_PROMPT, and now released a button.
                         if (now.key == 'j') {
                             display("Shutting down now.");
+                            setHelpText('');
+                            setStatus('');
                             setTimeout(function() {
                                 display("(TV off)");
+                                setHelpText("Press Ctrl or Shift to turn TV on.");
+                                setStatus('');
                             }, 1000);
                         } else if (now.key == 'k') {
                             display("Shutdown cancelled.");
@@ -204,13 +213,15 @@ function transition(now) {
             } else { // no keys were down
                 if (now.action == KEYSTATE.DOWN) {
                     state = STATE.IDLE;
-                    display("(TV on)");
                 }
             }
             break;
         case STATE.IDLE:
             if (someKeyWasDown()) {
-                if (now.action == KEYSTATE.DOWN) {
+                if (now.action == KEYSTATE.UP) {
+                    display('(TV on)');
+                    setStatus(mode + ': ' + getParam(mode));
+                } else if (now.action == KEYSTATE.DOWN) {
                     state = STATE.CHANGING_MODE;
                     startShutdownTimer();
                 }
@@ -266,6 +277,13 @@ function transition(now) {
             alert("WTH is this state?");
     }
     displayState(now);
+    switch (state) {
+        case STATE.IDLE:
+            setHelpText('To increase or decrease the current parameter (' + mode + '), press Shift or Ctrl.<br>To change another parameter, hold one key and press the other to cycle through parameters.<br>To shutdown, hold down both keys.');
+            break;
+        case STATE.CHANGING_MODE:
+            setHelpText('Release the key to confirm selection.<br>To shutdown, hold down the other key.');
+    }
     prev[now.key] = now.action;
 }
 
@@ -301,4 +319,4 @@ $(window).keyup(function(e) {
         });
     }
 });
-setCaption('Press Ctrl or Shift to turn TV on.');
+setHelpText('Press Ctrl or Shift to turn TV on.');

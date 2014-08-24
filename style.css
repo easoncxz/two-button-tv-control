@@ -6,7 +6,7 @@ html, body {
 }
 body {
     display: flex;
-    -webkit-justify-content: center;
+    -webkit-justify-content: flex-start;
     -webkit-align-items: center;
 }
 .center {
