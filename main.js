@@ -203,7 +203,6 @@ function transition(now) {
                             modeUp();
                         }
                         // cleatTimeout(shutdownTimeoutId);
-                        state = STATE.CHANGING_PARAM;
                     } else {
                         alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
                     }
