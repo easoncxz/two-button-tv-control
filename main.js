@@ -197,7 +197,11 @@ function transition(now) {
                     }
                 } else { // both keys were down
                     if (now.action == KEYSTATE.UP) { // should always be true
-                        modeUp();
+                        if (now.key == 'j') {
+                            modeDown();
+                        } else if (now.key == 'k') {
+                            modeUp();
+                        }
                         // cleatTimeout(shutdownTimeoutId);
                         state = STATE.CHANGING_PARAM;
                     } else {
