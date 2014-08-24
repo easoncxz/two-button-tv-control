@@ -95,6 +95,14 @@ var prev = {
 
 var shutdownTimeoutId;
 
+function startShutdownTimer() {
+    shutdownTimeoutId = setTimeout(function() {
+        state = STATE.SHUTDOWN_PROMPT;
+        display("Are you sure you want to shut down? <br> Press J to shutdown, and K to cancel.");
+        displayState({});
+    }, 800);
+}
+
 function displayState(now) {
     $('#state-displayer .state .value').text(state);
     $('#state-displayer .mode .value').text(mode);
@@ -152,12 +160,12 @@ function transition(now) {
                         if (now.key == 'j') {
                             display("Shutting down now.");
                             setTimeout(function() {
-                                display("TV off");
+                                display("(TV off)");
                             }, 1000);
                         } else if (now.key == 'k') {
                             display("Shutdown cancelled.");
                             setTimeout(function() {
-                                display("TV on");
+                                display("(TV on)");
                                 state = STATE.IDLE;
                             }, 1000);
                         }
@@ -178,7 +186,10 @@ function transition(now) {
             break;
         case STATE.IDLE:
             if (someKeyWasDown()) {
-                // do nothing
+                if (now.action == KEYSTATE.DOWN) {
+                    state = STATE.CHANGING_MODE;
+                    startShutdownTimer();
+                }
             } else { // no keys were down
                 if (now.action == KEYSTATE.DOWN) {
                     state = STATE.CHANGING_PARAM;
@@ -192,11 +203,7 @@ function transition(now) {
                 state = STATE.IDLE;
             } else if (someKeyWasDown() && now.action == KEYSTATE.DOWN) {
                 state = STATE.CHANGING_MODE;
-                // set timeout for shutdown prompt.
-                shutdownTimeoutId = setTimeout(function() {
-                    state = STATE.SHUTDOWN_PROMPT;
-                    display("Are you sure you want to shut down? Press Ctrl to shutdown, and Shift to cancel.");
-                }, 800);
+                startShutdownTimer();
             }
             break;
         case STATE.CHANGING_MODE:
@@ -206,11 +213,7 @@ function transition(now) {
                         state = STATE.IDLE;
                     } else {
                         // stay in this state and wait for the user to release this button to switch modes.
-                        shutdownTimeoutId = setTimeout(function() {
-                            state = STATE.SHUTDOWN_PROMPT;
-                            display("Are you sure you want to shut down? Press J to shutdown, and K to cancel.");
-                            displayState({});
-                        }, 800);
+                        startShutdownTimer();
                     }
                 } else { // both keys were down
                     if (now.action == KEYSTATE.UP) { // should always be true
