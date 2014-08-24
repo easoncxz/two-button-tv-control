@@ -5,17 +5,16 @@ html, body {
     height: 100%;
 }
 body {
+    /*Adapted from http://www.smashingmagazine.com/2013/05/22/centering-elements-with-flexbox/*/
     display: flex;
-    justify-content: center;
-    align-items: center;
-    /*vendor prefixed stuff below*/
     display: -ms-flexbox;
-    -ms-flex-pack: flex-start;
-    -ms-flex-align: center;
-
     display: -webkit-flex;
-    -webkit-justify-content: flex-start;
+    align-items: center;
     -webkit-align-items: center;
+    -ms-flex-align: center;
+    justify-content: center;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: flex-start;
 }
 .center {
     max-width: 600px;

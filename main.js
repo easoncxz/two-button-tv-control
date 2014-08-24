@@ -333,3 +333,4 @@ $(window).keyup(function(e) {
     }
 });
 setHelpText('Press Ctrl or Shift to turn TV on.');
+setStatus("Please use Chrome. I didn't style this thing for other browsers.");
