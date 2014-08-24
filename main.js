@@ -276,7 +276,8 @@ function transition(now) {
                         }
                         clearTimeout(shutdownTimeoutId);
                     } else {
-                        alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
+                        // alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
+                        //// On Windows, if Ctrl/Shift is held down, multiple keydown events will be fired.
                     }
                 }
             } else { // no keys were down
@@ -306,12 +307,12 @@ function transition(now) {
 
 $(window).keydown(function(e) {
     console.log(e);
-    if (e.keyCode == 17) {
+    if (e.keyCode == 17 || e.keyCode == 74 || e.keyCode == 40) {
         transition({
             key: 'j',
             action: KEYSTATE.DOWN
         });
-    } else if (e.keyCode == 16) {
+    } else if (e.keyCode == 16 || e.keyCode == 75 || e.keyCode == 38) {
         transition({
             key: 'k',
             action: KEYSTATE.DOWN
@@ -320,17 +321,17 @@ $(window).keydown(function(e) {
 });
 $(window).keyup(function(e) {
     console.log(e);
-    if (e.keyCode == 17) {
+    if (e.keyCode == 17 || e.keyCode == 74 || e.keyCode == 40) {
         transition({
             key: 'j',
             action: KEYSTATE.UP
         });
-    } else if (e.keyCode == 16) {
+    } else if (e.keyCode == 16 || e.keyCode == 75 || e.keyCode == 38) {
         transition({
             key: 'k',
             action: KEYSTATE.UP
         });
     }
 });
-setHelpText('Press Ctrl or Shift to turn TV on.');
+setHelpText("Press Ctrl or Shift to turn TV on.<br>If Windows' StickyKeys annoy you, try j/k or up/down instead.");
 setStatus("Please use Chrome. I didn't style this thing for other browsers.");
