@@ -92,14 +92,14 @@ var prev = {
 
 var shutdownTimeoutId;
 
-function displayState() {
+function displayState(now) {
     $('#state-displayer .state .value').text(state);
     $('#state-displayer .mode .value').text(mode);
-    $('#state-displayer .j-key .value').text(prev.j);
-    $('#state-displayer .k-key .value').text(prev.k);
     $('#state-displayer .volume .value').text(volume);
     $('#state-displayer .brightness .value').text(brightness);
     $('#state-displayer .channel .value').text(channel);
+    $('#state-displayer .now  .j .value').text(now.key == 'j' ? now.action : prev.j);
+    $('#state-displayer .now  .k .value').text(now.key == 'k' ? now.action : prev.k);
     $('#state-displayer .prev .j .value').text(prev.j);
     $('#state-displayer .prev .k .value').text(prev.k);
 }
@@ -109,7 +109,7 @@ function someKeyWasDown() {
 }
 
 function exactlyOneKeyWasDown() {
-    return ((prev.j == KEYSTATE.DOWN && prev.k == KEYSTATE.UP) || (prev.j = KEYSTATE.UP && prev.k == KEYSTATE.DOWN));
+    return ((prev.j == KEYSTATE.DOWN && prev.k == KEYSTATE.UP) || (prev.j == KEYSTATE.UP && prev.k == KEYSTATE.DOWN));
 }
 
 function modifyParam(mode, now) {
@@ -132,12 +132,6 @@ function modifyParam(mode, now) {
         case MODE.CHAN:
             channelUp(delta);
             break;
-        case MODE.MODE:
-            if (delta > 0) {
-                modeUp();
-            } else if (delta < 0) {
-                modeDown();
-            }
         default:
             alert("unrecognized mode in modifyParam");
     }
@@ -191,17 +185,18 @@ function transition(now) {
                         state = STATE.IDLE;
                     } else if (now.action == KEYSTATE.DOWN) { // the other key is down too
                         // set timeout for shutdown prompt.
-                        shutdownTimeoutId = setTimeout(function() {
-                            mode = MODE.SHUTDOWN_PROMPT;
-                            display("Are you sure you want to shut down? Press J to shutdown, and K to cancel.");
-                        }, 800);
+                        // shutdownTimeoutId = setTimeout(function() {
+                        //     mode = MODE.SHUTDOWN_PROMPT;
+                        //     display("Are you sure you want to shut down? Press J to shutdown, and K to cancel.");
+                        // }, 800);
                     } else {
                         alert("unrecognized button action in transition > CHANGING_MODE.");
                     }
                 } else { // both keys were down
                     if (now.action == KEYSTATE.UP) { // should always be true
-                        modifyParam(MODE.MODE, now); // change mode
-                        cleatTimeout(shutdownTimeoutId);
+                        modeUp();
+                        // cleatTimeout(shutdownTimeoutId);
+                        state = STATE.CHANGING_PARAM;
                     } else {
                         alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
                     }
@@ -220,8 +215,8 @@ function transition(now) {
         default:
             alert("WTH is this state?");
     }
+    displayState(now);
     prev[now.key] = now.action;
-    displayState();
 }
 
 //
@@ -256,4 +251,3 @@ $(window).keyup(function(e) {
         });
     }
 });
-displayState();
