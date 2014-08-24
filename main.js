@@ -53,6 +53,7 @@ function modeUp() {
             mode = MODE.BRI;
             break;
     }
+    setCaption(mode + ': ' + getParam(mode));
 }
 
 function modeDown() {
@@ -67,6 +68,7 @@ function modeDown() {
             mode = MODE.VOL;
             break;
     }
+    setCaption(mode + ': ' + getParam(mode));
 }
 
 var KEYSTATE = {
@@ -116,7 +118,7 @@ function displayState(now) {
 }
 
 function setCaption(text) {
-    $('#caption').text(text);
+    $('#caption').html(text);
 }
 
 function someKeyWasDown() {
@@ -127,9 +129,25 @@ function exactlyOneKeyWasDown() {
     return ((prev.j == KEYSTATE.DOWN && prev.k == KEYSTATE.UP) || (prev.j == KEYSTATE.UP && prev.k == KEYSTATE.DOWN));
 }
 
+// retrieves the volume/brightness/channel value
+function getParam(mode) {
+    switch (mode) {
+        case MODE.VOL:
+            return volume;
+            break;
+        case MODE.BRI:
+            return brightness;
+            break;
+        case MODE.CHAN:
+            return channel;
+            break;
+        default:
+            alert("unrecognized mode in setParam");
+    }
+}
+
 // changes the volume/brightness/channel value
 function setParam(mode, now) {
-    console.log("modifying param");
     var delta;
     if (now.key == 'j') {
         delta = -1;
@@ -141,12 +159,15 @@ function setParam(mode, now) {
     switch (mode) {
         case MODE.VOL:
             volumeUp(delta);
+            setCaption(MODE.VOL + ': ' + volume);
             break;
         case MODE.BRI:
             brightnessUp(delta);
+            setCaption(MODE.BRI + ': ' + brightness);
             break;
         case MODE.CHAN:
             channelUp(delta);
+            setCaption(MODE.CHAN + ': ' + channel);
             break;
         default:
             alert("unrecognized mode in setParam");
@@ -280,3 +301,4 @@ $(window).keyup(function(e) {
         });
     }
 });
+setCaption('Press Ctrl or Shift to turn TV on.');
