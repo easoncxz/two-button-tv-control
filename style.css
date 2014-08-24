@@ -1,0 +1,17 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+body {
+    display: flex;
+    -webkit-justify-content: flex-start;
+    -webkit-align-items: center;
+}
+.center {
+    max-width: 600px;
+    max-height: 400px;
+    background-color: #eee;
+    padding: 3em;
+}
