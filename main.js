@@ -30,6 +30,9 @@ var channel = 1;
 
 function channelUp(delta) {
     channel = (channel + delta) % 5; // there are only 5 channels
+    if (channel < 0) {
+        channel += 5;
+    }
 }
 
 // think enum
