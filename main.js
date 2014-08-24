@@ -104,7 +104,6 @@ function displayState() {
     $('#state-displayer .prev .k .value').text(prev.k);
 }
 
-
 function someKeyWasDown() {
     return (prev.j == KEYSTATE.DOWN || prev.k == KEYSTATE.DOWN);
 }
@@ -114,6 +113,7 @@ function exactlyOneKeyWasDown() {
 }
 
 function modifyParam(mode, now) {
+    console.log("modifying param");
     var delta;
     if (now.key == 'j') {
         delta = -1;
@@ -145,8 +145,6 @@ function modifyParam(mode, now) {
 
 // The state transition function. Modifies the state too.
 function transition(now) {
-
-
     switch (state) {
         case STATE.OFF:
             if (someKeyWasDown()) { // user came from SHUTDOWN_PROMPT, and now released a button.
@@ -169,10 +167,12 @@ function transition(now) {
             }
             break;
         case STATE.IDLE:
-            if (!someKeyWasDown() && now.action == KEYSTATE.DOWN) {
-                state = STATE.CHANGING_PARAM;
-            } else {
-                alert("There shouldn't be any keys down in IDLE state.");
+            if (someKeyWasDown()) {
+                // do nothing
+            } else { // no keys were down
+                if (now.action == KEYSTATE.DOWN) {
+                    state = STATE.CHANGING_PARAM;
+                }
             }
             break;
         case STATE.CHANGING_PARAM:
