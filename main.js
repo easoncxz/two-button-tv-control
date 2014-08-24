@@ -107,19 +107,6 @@ function displayState(now) {
     $('#state-displayer .prev .k .value').text(prev.k);
 }
 
-function paramValue(mode) {
-    switch (mode) {
-        case MODE.VOL:
-            return volume;
-            break;
-        case MODE.BRI:
-            return brightness;
-            break;
-        case MODE.CHAN:
-            return channel;
-            break;
-    }
-}
 
 function someKeyWasDown() {
     return (prev.j == KEYSTATE.DOWN || prev.k == KEYSTATE.DOWN);
@@ -129,7 +116,8 @@ function exactlyOneKeyWasDown() {
     return ((prev.j == KEYSTATE.DOWN && prev.k == KEYSTATE.UP) || (prev.j == KEYSTATE.UP && prev.k == KEYSTATE.DOWN));
 }
 
-function modifyParam(mode, now) {
+// changes the volume/brightness/channel value
+function setParam(mode, now) {
     console.log("modifying param");
     var delta;
     if (now.key == 'j') {
@@ -137,7 +125,7 @@ function modifyParam(mode, now) {
     } else if (now.key == 'k') {
         delta = 1;
     } else {
-        alert("modifyParam was called with some unrecognized key.");
+        alert("setParam was called with some unrecognized key.");
     }
     switch (mode) {
         case MODE.VOL:
@@ -150,7 +138,7 @@ function modifyParam(mode, now) {
             channelUp(delta);
             break;
         default:
-            alert("unrecognized mode in modifyParam");
+            alert("unrecognized mode in setParam");
     }
 }
 
@@ -199,7 +187,7 @@ function transition(now) {
             break;
         case STATE.CHANGING_PARAM:
             if (exactlyOneKeyWasDown() && now.action == KEYSTATE.UP) {
-                modifyParam(mode, now);
+                setParam(mode, now);
                 // TODO: set timeout for returning to VOL mode.
                 state = STATE.IDLE;
             } else if (someKeyWasDown() && now.action == KEYSTATE.DOWN) {
@@ -207,7 +195,7 @@ function transition(now) {
                 // set timeout for shutdown prompt.
                 shutdownTimeoutId = setTimeout(function() {
                     state = STATE.SHUTDOWN_PROMPT;
-                    display("Are you sure you want to shut down? Press J to shutdown, and K to cancel.");
+                    display("Are you sure you want to shut down? Press Ctrl to shutdown, and Shift to cancel.");
                 }, 800);
             }
             break;
