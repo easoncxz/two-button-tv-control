@@ -122,6 +122,14 @@ function setHelpText(text) {
     $('#help-text').html(text);
 }
 
+function setDefaultHelpTextForIdle() {
+    setHelpText('To increase or decrease the current parameter (' + mode + '), press Shift or Ctrl.<br>To change another parameter, hold one key and press the other to cycle through parameters.<br>To shutdown, hold down both keys.');
+}
+
+function setDefaultHelpTextForChangingMode() {
+    setHelpText('Release the key to confirm selection.<br>To shutdown, hold down the other key.');
+}
+
 function setStatus(text) {
     $('#status').text(text);
 }
@@ -200,6 +208,7 @@ function transition(now) {
                             setTimeout(function() {
                                 display("(TV on)");
                                 state = STATE.IDLE;
+                                setDefaultHelpTextForIdle();
                             }, 1000);
                         }
                     } else {
@@ -213,6 +222,8 @@ function transition(now) {
             } else { // no keys were down
                 if (now.action == KEYSTATE.DOWN) {
                     state = STATE.IDLE;
+                    display('Loading...');
+                    setHelpText('Release the button to finish loading.');
                 }
             }
             break;
@@ -230,14 +241,19 @@ function transition(now) {
                     state = STATE.CHANGING_PARAM;
                 }
             }
+            if (state == STATE.IDLE) {
+                setDefaultHelpTextForIdle();
+            }
             break;
         case STATE.CHANGING_PARAM:
             if (exactlyOneKeyWasDown() && now.action == KEYSTATE.UP) {
                 setParam(mode, now);
                 // TODO: set timeout for returning to VOL mode.
                 state = STATE.IDLE;
+                setDefaultHelpTextForIdle();
             } else if (someKeyWasDown() && now.action == KEYSTATE.DOWN) {
                 state = STATE.CHANGING_MODE;
+                setDefaultHelpTextForChangingMode();
                 startShutdownTimer();
             }
             break;
@@ -246,6 +262,7 @@ function transition(now) {
                 if (exactlyOneKeyWasDown()) {
                     if (now.action == KEYSTATE.UP) {
                         state = STATE.IDLE;
+                        setDefaultHelpTextForIdle();
                     } else {
                         // stay in this state and wait for the user to release this button to switch modes.
                         startShutdownTimer();
@@ -265,6 +282,9 @@ function transition(now) {
             } else { // no keys were down
                 alert("Mode changing is so broken.");
             }
+            if (state == STATE.CHANGING_MODE) {
+                setDefaultHelpTextForChangingMode();
+            }
             break;
         case STATE.SHUTDOWN_PROMPT:
             if (!someKeyWasDown()) { // no key was down.
@@ -277,13 +297,6 @@ function transition(now) {
             alert("WTH is this state?");
     }
     displayState(now);
-    switch (state) {
-        case STATE.IDLE:
-            setHelpText('To increase or decrease the current parameter (' + mode + '), press Shift or Ctrl.<br>To change another parameter, hold one key and press the other to cycle through parameters.<br>To shutdown, hold down both keys.');
-            break;
-        case STATE.CHANGING_MODE:
-            setHelpText('Release the key to confirm selection.<br>To shutdown, hold down the other key.');
-    }
     prev[now.key] = now.action;
 }
 

@@ -6,6 +6,14 @@ html, body {
 }
 body {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    /*vendor prefixed stuff below*/
+    display: -ms-flexbox;
+    -ms-flex-pack: flex-start;
+    -ms-flex-align: center;
+
+    display: -webkit-flex;
     -webkit-justify-content: flex-start;
     -webkit-align-items: center;
 }
