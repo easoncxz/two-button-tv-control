@@ -276,7 +276,8 @@ function transition(now) {
                         }
                         clearTimeout(shutdownTimeoutId);
                     } else {
-                        alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
+                        // alert("transition > CHANGING_MODE cannot understand how you can press another button down while both are already down.");
+                        //// On Windows, if Ctrl/Shift is held down, multiple keydown events will be fired.
                     }
                 }
             } else { // no keys were down
