@@ -1,7 +1,3 @@
-function display(text) {
-    $('#display').html(text);
-}
-
 var volume = 5;
 
 function volumeUp(delta) {
@@ -48,13 +44,13 @@ var mode = MODE.VOL; // when the user turns on the TV, TV waits for volumn contr
 function modeUp() {
     switch (mode) {
         case MODE.VOL:
-            mode = MODE.BRI;
-            break;
-        case MODE.BRI:
             mode = MODE.CHAN;
             break;
-        case MODE.CHAN:
+        case MODE.BRI:
             mode = MODE.VOL;
+            break;
+        case MODE.CHAN:
+            mode = MODE.BRI;
             break;
     }
 }
@@ -62,13 +58,13 @@ function modeUp() {
 function modeDown() {
     switch (mode) {
         case MODE.VOL:
-            mode = MODE.CHAN;
+            mode = MODE.BRI;
             break;
         case MODE.BRI:
-            mode = MODE.VOL;
+            mode = MODE.CHAN;
             break;
         case MODE.CHAN:
-            mode = MODE.BRI;
+            mode = MODE.VOL;
             break;
     }
 }
@@ -103,6 +99,10 @@ function startShutdownTimer() {
     }, 800);
 }
 
+function display(text) {
+    $('#display').html(text);
+}
+
 function displayState(now) {
     $('#state-displayer .state .value').text(state);
     $('#state-displayer .mode .value').text(mode);
@@ -115,6 +115,9 @@ function displayState(now) {
     $('#state-displayer .prev .k .value').text(prev.k);
 }
 
+function setCaption(text) {
+    $('#caption').text(text);
+}
 
 function someKeyWasDown() {
     return (prev.j == KEYSTATE.DOWN || prev.k == KEYSTATE.DOWN);
